@@ -102,24 +102,28 @@ export default function EventRegistrationPage() {
 
       console.log('Step 2: All fields validated');
 
-      // Generate QR code data
-      const qrData = JSON.stringify({
+      // Generate QR code data with timestamp for uniqueness
+      const qrData = {
         registrationNumber: data.registrationNumber,
         eventId: event.id,
-        userId: user.id,
         eventTitle: event.title,
-        attendeeName: data.fullName,
-      });
+        fullName: data.fullName,
+        email: data.email,
+        timestamp: Date.now()
+      };
       
-      console.log('Step 3: Generating QR code...');
+      const qrDataString = JSON.stringify(qrData);
+      
+      console.log('Step 3: Generating QR code with data:', qrData);
       // Generate QR code image
-      const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+      const qrCodeDataUrl = await QRCode.toDataURL(qrDataString, {
         width: 300,
         margin: 2,
         color: {
           dark: '#1e40af',
           light: '#ffffff'
-        }
+        },
+        errorCorrectionLevel: 'H'
       });
 
       console.log('Step 4: QR code generated');
