@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import QRCode from 'qrcode';
 import toast from 'react-hot-toast';
