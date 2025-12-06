@@ -24,6 +24,7 @@ export interface Event {
 export interface Registration {
   id: string;
   eventId: string;
+  eventTitle: string;
   userId: string;
   registrationNumber: string;
   fullName: string;
