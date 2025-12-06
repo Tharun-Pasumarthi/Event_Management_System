@@ -21,7 +21,7 @@ interface TestRegistration {
 }
 
 export default function TestQRPage() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const [registrations, setRegistrations] = useState<TestRegistration[]>([]);
   const [selectedReg, setSelectedReg] = useState<TestRegistration | null>(null);
@@ -30,16 +30,16 @@ export default function TestQRPage() {
   const [loadingRegs, setLoadingRegs] = useState(true);
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
+    if (!loading && (!user || user.role !== 'admin')) {
       router.push('/admin/login');
     }
-  }, [user, isAdmin, loading, router]);
+  }, [user, loading, router]);
 
   useEffect(() => {
-    if (user && isAdmin) {
+    if (user && user.role === 'admin') {
       fetchRecentRegistrations();
     }
-  }, [user, isAdmin]);
+  }, [user]);
 
   const fetchRecentRegistrations = async () => {
     try {
@@ -124,7 +124,7 @@ export default function TestQRPage() {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user || user.role !== 'admin') {
     return null;
   }
 
