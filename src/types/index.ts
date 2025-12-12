@@ -12,6 +12,7 @@ export interface Event {
   description: string;
   date: Date;
   time: string;
+  endTime: string;
   location: string;
   duration: string;
   capacity: number;

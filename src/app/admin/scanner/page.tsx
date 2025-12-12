@@ -276,7 +276,13 @@ export default function QRScannerPage() {
 
   const handleManualCheckIn = async () => {
     if (!manualEntry.trim() || manualEntry.trim().length !== 10) {
-      toast.error('Please enter a valid 10-digit registration number');
+      toast.error('Please enter a valid 10-character alphanumeric code');
+      return;
+    }
+
+    // Validate format
+    if (!/^[A-Z0-9]{10}$/.test(manualEntry.trim())) {
+      toast.error('Invalid format. Use only letters (A-Z) and numbers (0-9)');
       return;
     }
 
@@ -427,15 +433,15 @@ export default function QRScannerPage() {
                   <input
                     type="text"
                     value={manualEntry}
-                    onChange={(e) => setManualEntry(e.target.value.replace(/\D/g, ''))}
+                    onChange={(e) => setManualEntry(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
                     onKeyPress={(e) => e.key === 'Enter' && handleManualCheckIn()}
-                    placeholder="0000000000"
-                    className="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 text-center text-2xl font-mono tracking-wider"
+                    placeholder="Enter 10-character code"
+                    className="w-full px-6 py-4 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 text-center text-2xl font-mono tracking-wider uppercase"
                     maxLength={10}
                     autoFocus
                   />
                   <p className="text-sm text-gray-500 text-center mt-2">
-                    {manualEntry.length}/10 digits
+                    {manualEntry.length}/10 characters (A-Z, 0-9)
                   </p>
                 </div>
                 <div className="flex gap-4">

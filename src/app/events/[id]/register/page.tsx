@@ -29,9 +29,17 @@ export default function EventRegistrationPage() {
   const [registered, setRegistered] = useState(false);
 
   const generateRegistrationNumber = () => {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substr(2, 5);
-    return `REG-${timestamp}-${random}`.toUpperCase();
+    // Generate random 10-character alphanumeric code
+    // Excludes confusing characters: 0, O, 1, I
+    const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let regNumber = '';
+    
+    for (let i = 0; i < 10; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      regNumber += chars[randomIndex];
+    }
+    
+    return regNumber;
   };
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<RegistrationForm>({
@@ -102,6 +110,24 @@ export default function EventRegistrationPage() {
 
       console.log('Step 2: All fields validated');
 
+      // Server-side validation of registration number
+      console.log('Step 3: Validating registration number on server...');
+      const validationResponse = await fetch('/api/validate-registration', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ registrationNumber: data.registrationNumber })
+      });
+
+      const validationResult = await validationResponse.json();
+      
+      if (!validationResult.valid) {
+        toast.error(validationResult.error || 'Invalid registration number');
+        setSubmitting(false);
+        return;
+      }
+
+      console.log('Step 4: Registration number validated successfully');
+
       // Generate QR code data with timestamp for uniqueness
       const qrData = {
         registrationNumber: data.registrationNumber,
@@ -114,7 +140,7 @@ export default function EventRegistrationPage() {
       
       const qrDataString = JSON.stringify(qrData);
       
-      console.log('Step 3: Generating QR code with data:', qrData);
+      console.log('Step 5: Generating QR code with data:', qrData);
       // Generate QR code image
       const qrCodeDataUrl = await QRCode.toDataURL(qrDataString, {
         width: 300,
@@ -306,12 +332,32 @@ export default function EventRegistrationPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
                 <label htmlFor="registrationNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                  Registration Number (10 digits) *
+                  Registration Number (10 alphanumeric characters) *
                 </label>
                 <input
                   {...register('registrationNumber', { 
                     required: 'Registration number is required',
                     pattern: {
+                      value: /^[A-Z0-9]{10}$/,
+                      message: 'Must be exactly 10 alphanumeric characters (A-Z, 0-9)'
+                    }
+                  })}
+                  type="text"
+                  maxLength={10}
+                  placeholder="e.g., K8P2M9X4L5"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white text-gray-900 placeholder-gray-500 font-mono uppercase"
+                  style={{ textTransform: 'uppercase' }}
+                  onChange={(e) => {
+                    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                  }}
+                />
+                {errors.registrationNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.registrationNumber.message}</p>
+                )}
+                <p className="text-sm text-gray-500 mt-1">
+                  💡 Enter 10 characters using letters (A-Z) and numbers (0-9)
+                </p>
+              </div>
                       value: /^[0-9,A-Z]{10}$/,
                       message: 'Registration number must be exactly 10 digits'
                     }

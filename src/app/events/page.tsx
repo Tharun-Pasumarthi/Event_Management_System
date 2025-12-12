@@ -7,6 +7,7 @@ import { Event } from '@/types';
 import Navbar from '@/components/Navbar';
 import EventCard from '@/components/EventCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { updateAllEventsStatus } from '@/hooks/useEventStatusChecker';
 
 export default function EventsPage() {
   const { loading: authLoading } = useAuth();
@@ -27,7 +28,19 @@ export default function EventsPage() {
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       })) as Event[];
       
-      const activeEvents = eventsData
+      // Update all event statuses based on current time
+      await updateAllEventsStatus(eventsData);
+      
+      // Fetch again to get updated statuses
+      const updatedSnapshot = await getDocs(collection(db, 'events'));
+      const updatedEvents = updatedSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        date: doc.data().date?.toDate() || new Date(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+      })) as Event[];
+      
+      const activeEvents = updatedEvents
         .filter(e => e.status !== 'completed')
         .sort((a, b) => a.date.getTime() - b.date.getTime());
       

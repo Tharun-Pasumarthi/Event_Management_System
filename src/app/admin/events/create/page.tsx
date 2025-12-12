@@ -13,6 +13,7 @@ interface EventForm {
   description: string;
   date: string;
   time: string;
+  endTime: string;
   location: string;
   duration: string;
   capacity: number;
@@ -113,6 +114,7 @@ export default function CreateEventPage() {
         description: data.description,
         date: new Date(data.date),
         time: data.time,
+        endTime: data.endTime,
         location: data.location,
         duration: data.duration,
         capacity: Number(data.capacity),
@@ -197,11 +199,27 @@ export default function CreateEventPage() {
               </div>
 
               <div>
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                  Location *
+                </label>
+                <input
+                  {...register('location', { required: 'Location is required' })}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-white text-gray-900 placeholder-gray-500 font-medium"
+                  placeholder="Enter event location"
+                />
+                {errors.location && (
+                  <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                 <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
                   Start Time *
                 </label>
                 <input
-                  {...register('time', { required: 'Time is required' })}
+                  {...register('time', { required: 'Start time is required' })}
                   type="time"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-white text-gray-900 font-medium"
                 />
@@ -209,20 +227,20 @@ export default function CreateEventPage() {
                   <p className="text-red-500 text-sm mt-1">{errors.time.message}</p>
                 )}
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                Location *
-              </label>
-              <input
-                {...register('location', { required: 'Location is required' })}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-white text-gray-900 placeholder-gray-500 font-medium"
-                placeholder="Enter event location"
-              />
-              {errors.location && (
-                <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
-              )}
+              <div>
+                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-2">
+                  End Time *
+                </label>
+                <input
+                  {...register('endTime', { required: 'End time is required' })}
+                  type="time"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-white text-gray-900 font-medium"
+                />
+                {errors.endTime && (
+                  <p className="text-red-500 text-sm mt-1">{errors.endTime.message}</p>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
